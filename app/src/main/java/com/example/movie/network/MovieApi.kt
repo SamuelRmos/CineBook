@@ -2,6 +2,7 @@ package com.example.movie.network
 
 import com.example.movie.model.MovieCredits
 import com.example.movie.model.MovieResponse
+import com.example.movie.model.PersonCombinedCreditsResponse
 import com.example.movie.model.PersonSearchResponse
 import com.example.movie.model.VideosList
 import retrofit2.Response
@@ -40,4 +41,9 @@ interface MovieApi {
         @Query("query") query: String,
         @Query("page") page: Int = 1
     ): Response<PersonSearchResponse>
+
+    @GET("person/{personId}/combined_credits")
+    suspend fun getPersonCombinedCredits(
+        @Path("personId") personId: Int
+    ): Response<PersonCombinedCreditsResponse>
 }

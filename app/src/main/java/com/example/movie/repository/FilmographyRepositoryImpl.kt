@@ -25,26 +25,38 @@ class FilmographyRepositoryImpl @Inject constructor(
     override fun getPersonFilmography(personName: String): Flow<DetailRequestState<FilmographyMedia>> = flow {
         emit(Loading)
         try {
-            val response = movieApi.searchPerson(query = personName)
-            val body = response.body()
-            if (response.isSuccessful && body != null) {
-                val matchedPeople = body.results
-                    .filter { it.name.equals(personName, ignoreCase = true) }
-                    .ifEmpty { body.results }
+            val searchResponse = movieApi.searchPerson(query = personName)
+            val searchBody = searchResponse.body()
+            if (searchResponse.isSuccessful && searchBody != null) {
+                val matchedPerson = searchBody.results
+                    .firstOrNull { it.name.equals(personName, ignoreCase = true) }
+                    ?: searchBody.results.firstOrNull()
 
-                val knownForItems = matchedPeople.flatMap { it.knownFor }
+                if (matchedPerson == null) {
+                    emit(Success(FilmographyMedia()))
+                    return@flow
+                }
 
-                val movies = knownForItems
-                    .filter { it.mediaType == MEDIA_TYPE_MOVIE || (it.mediaType == null && it.title != null) }
-                    .distinctBy { it.id }
-                    .map { it.toMovie() }
+                val creditsResponse = movieApi.getPersonCombinedCredits(matchedPerson.id)
+                val creditsBody = creditsResponse.body()
+                if (creditsResponse.isSuccessful && creditsBody != null) {
+                    val movies = creditsBody.cast
+                        .filter {
+                            it.mediaType == MEDIA_TYPE_MOVIE ||
+                                (it.mediaType == null && it.title != null)
+                        }
+                        .distinctBy { it.id }
+                        .map { it.toMovie() }
 
-                val tvShows = knownForItems
-                    .filter { it.mediaType == MEDIA_TYPE_TV }
-                    .distinctBy { it.id }
-                    .map { it.toMovie() }
+                    val tvShows = creditsBody.cast
+                        .filter { it.mediaType == MEDIA_TYPE_TV }
+                        .distinctBy { it.id }
+                        .map { it.toMovie() }
 
-                emit(Success(FilmographyMedia(movies = movies, tvShows = tvShows)))
+                    emit(Success(FilmographyMedia(movies = movies, tvShows = tvShows)))
+                } else {
+                    emit(Error(FILMOGRAPHY_ERROR_MESSAGE))
+                }
             } else {
                 emit(Error(FILMOGRAPHY_ERROR_MESSAGE))
             }

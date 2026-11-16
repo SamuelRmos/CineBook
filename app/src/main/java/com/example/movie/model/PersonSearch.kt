@@ -20,6 +20,11 @@ data class PersonResult(
 )
 
 @JsonClass(generateAdapter = true)
+data class PersonCombinedCreditsResponse(
+    val cast: List<KnownForItem> = emptyList()
+)
+
+@JsonClass(generateAdapter = true)
 data class KnownForItem(
     val id: Int,
     val title: String? = null,
