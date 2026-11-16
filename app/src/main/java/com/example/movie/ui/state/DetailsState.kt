@@ -9,3 +9,7 @@ data class DetailsState(
     val error: String = "",
     val key: String = ""
 )
+
+sealed interface MovieDetailIntent {
+    data class LoadMovieDetails(val movieId: Int) : MovieDetailIntent
+}

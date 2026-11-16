@@ -14,4 +14,7 @@
     <string name="search_placeholder">Search</string>
     <string name="directed_by_prefix">, directed by </string>
     <string name="cine_book_title">CineBook</string>
+    <string name="filmography_title">Filmography</string>
+    <string name="tab_movie">Movie</string>
+    <string name="tab_tv">TV</string>
 </resources>

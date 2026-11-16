@@ -70,6 +70,7 @@ import com.example.movie.theme.colorBackground
 import com.example.movie.ui.components.dimensionResource
 import com.example.movie.ui.components.textSizeResource
 import com.example.movie.ui.state.DetailsState
+import com.example.movie.ui.state.MovieDetailIntent.LoadMovieDetails
 import com.example.movie.viewmodel.MovieDetailViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
@@ -91,7 +92,7 @@ fun MovieDetailsScreen(
         }
     }
     LaunchedEffect(movie.id) {
-        viewModel.getMovieCredits(movie.id)
+        viewModel.onIntent(LoadMovieDetails(movie.id))
     }
     val requestState by viewModel.stateDetails.collectAsState()
 
@@ -136,7 +137,7 @@ fun MovieDetailsContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .background(backgroundColor),
-            verticalArrangement = Arrangement.spacedBy(padding10),
+            verticalArrangement = Arrangement.spacedBy(padding10)
         ) {
             BackdropView(
                 movie = movie,
@@ -176,7 +177,8 @@ fun MovieDetailsContent(
                 CastRow(
                     movieId = movie.id,
                     castList = requestState.cast,
-                    textColor = textColor
+                    textColor = textColor,
+                    onCastClick = actions.goToFilmography
                 )
             }
         }
@@ -208,7 +210,8 @@ internal fun extractDominantSwatchColors(bitmap: Bitmap): Pair<Color, Color>? {
 private fun CastRow(
     movieId: Int,
     castList: List<Cast>,
-    textColor: Color
+    textColor: Color,
+    onCastClick: (Cast) -> Unit = {}
 ) {
     val padding10 = dimensionResource(R.dimen.dimen_10)
     val padding4 = dimensionResource(R.dimen.dimen_4)
@@ -233,7 +236,9 @@ private fun CastRow(
     ) {
         castList.forEach { cast ->
             Column(
-                modifier = Modifier.width(dimensionResource(R.dimen.dimen_80)),
+                modifier = Modifier
+                    .width(dimensionResource(R.dimen.dimen_80))
+                    .clickable { onCastClick(cast) },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
@@ -299,7 +304,7 @@ private fun BackdropView(
             onBitmapLoadFailed = onBitmapLoadFailed
         )
         Box(modifier = Modifier.padding(top = dimensionResource(R.dimen.dimen_30))) {
-            IconButton(onClick = { actions.goToMovies() }) {
+            IconButton(onClick = { actions.navigateUp() }) {
                 Icon(
                     Filled.ArrowBack,
                     "backIcon",
@@ -424,7 +429,7 @@ private fun MovieDetailScreenPreview() {
     MovieTheme {
         Surface(color = colorBackground) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
             ) {
                 MovieDetailsContent(
                     movie = sampleMovieData[1],

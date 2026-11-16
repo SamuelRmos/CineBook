@@ -1,7 +1,9 @@
 package com.example.movie.navigation
 
 import androidx.navigation.NavHostController
+import com.example.movie.model.Cast
 import com.example.movie.model.Movie
+import com.example.movie.navigation.Screens.FilmographyScreen
 import com.example.movie.navigation.Screens.MovieDetails
 import com.example.movie.navigation.Screens.MoviesScreen
 import com.example.movie.navigation.Screens.SearchScreen
@@ -20,6 +22,13 @@ class Actions(private val navHostController: NavHostController) {
 
     val goToSearch: () -> Unit = {
         navHostController.navigate(SearchScreen.route)
+    }
+
+    val goToFilmography: (Cast) -> Unit = {
+        navHostController.navigate(
+            route = FilmographyScreen.route,
+            Pair("cast_detail", it)
+        )
     }
 
     val navigateUp: () -> Unit = {
