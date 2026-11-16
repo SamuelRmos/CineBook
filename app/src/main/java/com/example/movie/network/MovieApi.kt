@@ -2,6 +2,7 @@ package com.example.movie.network
 
 import com.example.movie.model.MovieCredits
 import com.example.movie.model.MovieResponse
+import com.example.movie.model.PersonSearchResponse
 import com.example.movie.model.VideosList
 import retrofit2.Response
 import retrofit2.http.GET
@@ -33,4 +34,10 @@ interface MovieApi {
         @Query("query") query: String,
         @Query("page") page: Int = 1
     ): Response<MovieResponse>
+
+    @GET("search/person")
+    suspend fun searchPerson(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1
+    ): Response<PersonSearchResponse>
 }
