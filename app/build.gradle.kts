@@ -12,11 +12,7 @@ android {
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
-
     }
-//    kotlinOptions {
-//        jvmTarget = javaVersion.toString()
-//    }
 
     defaultConfig {
         applicationId = "com.samuelrmos.cinebook"
@@ -39,7 +35,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,6 +75,7 @@ import com.example.movie.viewmodel.MovieDetailViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 private const val DARK_LUMINANCE_THRESHOLD = 0.5f
 
@@ -303,7 +305,7 @@ private fun BackdropView(
             onBitmapLoadFailed = onBitmapLoadFailed
         )
         Box(modifier = Modifier.padding(top = dimensionResource(R.dimen.dimen_30))) {
-            IconButton(onClick = { actions.goToMovies() }) {
+            IconButton(onClick = { actions.navigateUp() }) {
                 Icon(
                     Filled.ArrowBack,
                     "backIcon",

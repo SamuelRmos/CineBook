@@ -35,5 +35,5 @@ fun placeholderImage(id: Int): Int {
         R.drawable.movie002,
         R.drawable.movie003
     )
-    return sampleImage[Integer.min(id, sampleImage.size) - 1]
+    return sampleImage[(id - 1).coerceIn(0, sampleImage.lastIndex)]
 }
