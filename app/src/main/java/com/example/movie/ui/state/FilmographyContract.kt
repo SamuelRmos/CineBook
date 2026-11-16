@@ -21,7 +21,7 @@ data class FilmographyState(
         get() = when (selectedTab) {
             FilmographyTab.MOVIE -> movies
             FilmographyTab.TV -> tvShows
-        }
+        }.filter { !it.posterImage.isNullOrBlank() }
 }
 
 sealed interface FilmographyIntent {

@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons.AutoMirrored.Filled
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -65,6 +64,7 @@ import com.example.movie.theme.MovieTheme
 import com.example.movie.theme.colorAccent
 import com.example.movie.theme.colorBackground
 import com.example.movie.ui.components.dimensionResource
+import com.example.movie.ui.components.shimmerEffect
 import com.example.movie.ui.components.textSizeResource
 import com.example.movie.ui.state.FilmographyIntent
 import com.example.movie.ui.state.FilmographyIntent.LoadFilmography
@@ -75,6 +75,7 @@ import com.example.movie.viewmodel.FilmographyViewModel
 import com.skydoves.landscapist.coil.CoilImage
 
 private const val GRID_COLUMN_COUNT = 4
+private const val SHIMMER_ITEM_COUNT = 16
 
 @Composable
 fun FilmographyScreen(
@@ -225,15 +226,7 @@ fun FilmographyScreenContent(
         }
 
         if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = Color.White,
-                    modifier = Modifier.size(dimensionResource(R.dimen.dimen_48))
-                )
-            }
+            FilmographyGridShimmer()
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(GRID_COLUMN_COUNT),
@@ -252,6 +245,32 @@ fun FilmographyScreenContent(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun FilmographyGridShimmer() {
+    val padding10 = dimensionResource(R.dimen.dimen_10)
+    val padding6 = dimensionResource(R.dimen.dimen_6)
+    val posterHeight = dimensionResource(R.dimen.dimen_120)
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(GRID_COLUMN_COUNT),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(padding10),
+        horizontalArrangement = Arrangement.spacedBy(padding6),
+        verticalArrangement = Arrangement.spacedBy(padding6),
+        userScrollEnabled = false
+    ) {
+        items(SHIMMER_ITEM_COUNT) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(posterHeight)
+                    .clip(RoundedCornerShape(padding6))
+                    .shimmerEffect()
+            )
         }
     }
 }

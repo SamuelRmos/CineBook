@@ -83,6 +83,36 @@ class FilmographyRepositoryImplTest {
     }
 
     @Test
+    fun getPersonFilmography_whenPosterImageNullOrBlank_excludesItemsWithoutPoster(): Unit = runBlocking {
+        val movieWithoutPoster = KnownForItem(
+            id = 500,
+            title = "No Poster Movie",
+            posterImage = null,
+            mediaType = "movie"
+        )
+        val tvWithBlankPoster = KnownForItem(
+            id = 501,
+            name = "Blank Poster TV",
+            posterImage = "   ",
+            mediaType = "tv"
+        )
+        coEvery { movieApi.searchPerson("Tom Hanks") } returns Response.success(
+            PersonSearchResponse(results = listOf(PersonResult(31, "Tom Hanks", "/tom.jpg")))
+        )
+        coEvery { movieApi.getPersonCombinedCredits(31) } returns Response.success(
+            PersonCombinedCreditsResponse(
+                cast = listOf(movieItem1, movieWithoutPoster, tvItem, tvWithBlankPoster)
+            )
+        )
+
+        val emissions = repository.getPersonFilmography("Tom Hanks").toList()
+
+        val success = emissions[1] as DetailRequestState.Success
+        assertEquals(listOf(movieItem1.toMovie()), success.data.movies)
+        assertEquals(listOf(tvItem.toMovie()), success.data.tvShows)
+    }
+
+    @Test
     fun getPersonFilmography_whenNoExactMatch_usesFirstResultIdForCombinedCredits(): Unit = runBlocking {
         coEvery { movieApi.searchPerson("Hanks") } returns Response.success(
             PersonSearchResponse(

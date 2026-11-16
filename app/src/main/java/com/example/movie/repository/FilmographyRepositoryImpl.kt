@@ -40,7 +40,11 @@ class FilmographyRepositoryImpl @Inject constructor(
                 val creditsResponse = movieApi.getPersonCombinedCredits(matchedPerson.id)
                 val creditsBody = creditsResponse.body()
                 if (creditsResponse.isSuccessful && creditsBody != null) {
-                    val movies = creditsBody.cast
+                    val itemsWithPosters = creditsBody.cast.filter {
+                        !it.posterImage.isNullOrBlank()
+                    }
+
+                    val movies = itemsWithPosters
                         .filter {
                             it.mediaType == MEDIA_TYPE_MOVIE ||
                                 (it.mediaType == null && it.title != null)
@@ -48,7 +52,7 @@ class FilmographyRepositoryImpl @Inject constructor(
                         .distinctBy { it.id }
                         .map { it.toMovie() }
 
-                    val tvShows = creditsBody.cast
+                    val tvShows = itemsWithPosters
                         .filter { it.mediaType == MEDIA_TYPE_TV }
                         .distinctBy { it.id }
                         .map { it.toMovie() }
