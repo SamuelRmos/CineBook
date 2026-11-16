@@ -7,7 +7,7 @@ import com.example.movie.model.Video
 import com.example.movie.model.VideosList
 import com.example.movie.repository.DetailRepository
 import com.example.movie.ui.details.DetailRequestState
-import io.mockk.coEvery
+import com.example.movie.ui.state.MovieDetailIntent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -22,18 +22,20 @@ class MovieDetailViewModelTest {
     private val repository = mockk<DetailRepository>()
 
     @Test
-    fun getMovieCredits_combinesCreditsAndVideoIntoDetailsState() {
+    fun onIntent_loadMovieDetails_combinesCreditsAndVideoIntoDetailsState() {
         val cast = listOf(Cast("Actor 1", "/actor1.jpg", "Acting"))
         val credits = MovieCredits(
             cast = cast,
             crew = listOf(Crew("Christopher Nolan", null, "Director"))
         )
         val videos = VideosList(
-            results = listOf(Video(
-                site = "YouTube",
-                type = "Trailer",
-                key = "trailer_key_1"
-            ))
+            results = listOf(
+                Video(
+                    site = "YouTube",
+                    type = "Trailer",
+                    key = "trailer_key_1"
+                )
+            )
         )
         every { repository.getMovieCredits(10) } returns flowOf(
             DetailRequestState.Loading,
@@ -45,7 +47,7 @@ class MovieDetailViewModelTest {
         )
 
         val viewModel = MovieDetailViewModel(repository, Dispatchers.Unconfined)
-        viewModel.getMovieCredits(10)
+        viewModel.onIntent(MovieDetailIntent.LoadMovieDetails(10))
 
         val state = viewModel.stateDetails.value
         assertFalse(state.isLoading)
@@ -56,7 +58,7 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun getMovieCredits_whenPartialError_preservesSuccessDataAndSetsError() {
+    fun onIntent_loadMovieDetailsWhenPartialError_preservesSuccessDataAndSetsError() {
         val cast = listOf(Cast("Actor 1", "/actor1.jpg", "Acting"))
         val credits = MovieCredits(
             cast = cast,
@@ -70,7 +72,7 @@ class MovieDetailViewModelTest {
         )
 
         val viewModel = MovieDetailViewModel(repository, Dispatchers.Unconfined)
-        viewModel.getMovieCredits(10)
+        viewModel.onIntent(MovieDetailIntent.LoadMovieDetails(10))
 
         val state = viewModel.stateDetails.value
         assertFalse(state.isLoading)
@@ -80,18 +82,17 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun getMovieCredits_ignoresDuplicateRequestForSameMovieId() {
+    fun onIntent_loadMovieDetailsWhenDuplicateMovieId_doesNotRefetch() {
         val credits = MovieCredits(emptyList(), emptyList())
         val videos = VideosList(emptyList())
         every { repository.getMovieCredits(10) } returns flowOf(DetailRequestState.Success(credits))
         every { repository.getMovieVideo(10) } returns flowOf(DetailRequestState.Success(videos))
 
         val viewModel = MovieDetailViewModel(repository, Dispatchers.Unconfined)
-        viewModel.getMovieCredits(10)
-        viewModel.getMovieCredits(10)
+        viewModel.onIntent(MovieDetailIntent.LoadMovieDetails(10))
+        viewModel.onIntent(MovieDetailIntent.LoadMovieDetails(10))
 
-        coEvery { repository.getMovieCredits(10) }
-        coEvery { repository.getMovieVideo(10) }
+        verify(exactly = 1) { repository.getMovieCredits(10) }
+        verify(exactly = 1) { repository.getMovieVideo(10) }
     }
 }
-

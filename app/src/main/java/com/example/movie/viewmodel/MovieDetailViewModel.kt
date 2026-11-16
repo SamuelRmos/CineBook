@@ -11,11 +11,14 @@ import com.example.movie.ui.details.DetailRequestState.Error
 import com.example.movie.ui.details.DetailRequestState.Loading
 import com.example.movie.ui.details.DetailRequestState.Success
 import com.example.movie.ui.state.DetailsState
+import com.example.movie.ui.state.MovieDetailIntent
+import com.example.movie.ui.state.MovieDetailIntent.LoadMovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -38,12 +41,18 @@ class MovieDetailViewModel(
     constructor(detailRepository: DetailRepository) : this(detailRepository, Dispatchers.IO)
 
     private val _stateDetails = MutableStateFlow(DetailsState())
-    val stateDetails = _stateDetails.asStateFlow()
+    val stateDetails: StateFlow<DetailsState> = _stateDetails.asStateFlow()
 
     private var currentMovieId: Int? = null
     private var fetchJob: Job? = null
 
-    fun getMovieCredits(id: Int) {
+    fun onIntent(intent: MovieDetailIntent) {
+        when (intent) {
+            is LoadMovieDetails -> loadMovieDetails(intent.movieId)
+        }
+    }
+
+    private fun loadMovieDetails(id: Int) {
         if (currentMovieId == id && _stateDetails.value.error.isEmpty()) return
         currentMovieId = id
         fetchJob?.cancel()

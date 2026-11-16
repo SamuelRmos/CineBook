@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,11 +70,11 @@ import com.example.movie.theme.colorBackground
 import com.example.movie.ui.components.dimensionResource
 import com.example.movie.ui.components.textSizeResource
 import com.example.movie.ui.state.DetailsState
+import com.example.movie.ui.state.MovieDetailIntent.LoadMovieDetails
 import com.example.movie.viewmodel.MovieDetailViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 private const val DARK_LUMINANCE_THRESHOLD = 0.5f
 
@@ -93,7 +92,7 @@ fun MovieDetailsScreen(
         }
     }
     LaunchedEffect(movie.id) {
-        viewModel.getMovieCredits(movie.id)
+        viewModel.onIntent(LoadMovieDetails(movie.id))
     }
     val requestState by viewModel.stateDetails.collectAsState()
 
