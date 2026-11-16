@@ -3,6 +3,8 @@ package com.example.movie.di
 import com.example.movie.network.MovieApi
 import com.example.movie.repository.DetailRepository
 import com.example.movie.repository.DetailRepositoryImpl
+import com.example.movie.repository.FilmographyRepository
+import com.example.movie.repository.FilmographyRepositoryImpl
 import com.example.movie.repository.MovieRepository
 import com.example.movie.repository.MovieRepositoryImpl
 import com.example.movie.repository.SearchRepository
@@ -26,4 +28,8 @@ object RepositoryModule {
     @Provides
     fun provideSearchRepository(movieApi: MovieApi): SearchRepository =
         SearchRepositoryImpl(movieApi)
+
+    @Provides
+    fun provideFilmographyRepository(movieApi: MovieApi): FilmographyRepository =
+        FilmographyRepositoryImpl(movieApi)
 }
