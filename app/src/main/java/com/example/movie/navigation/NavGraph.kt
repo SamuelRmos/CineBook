@@ -9,12 +9,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.movie.model.Cast
 import com.example.movie.model.Movie
+import com.example.movie.navigation.Screens.FilmographyScreen
 import com.example.movie.navigation.Screens.MovieDetails
 import com.example.movie.navigation.Screens.MoviesScreen
 import com.example.movie.navigation.Screens.SearchScreen
 import com.example.movie.ui.MoviesScreen
 import com.example.movie.ui.details.MovieDetailsScreen
+import com.example.movie.ui.filmography.FilmographyScreen
 import com.example.movie.ui.search.SearchScreen
 
 @Composable
@@ -29,6 +32,10 @@ fun NavGraph(navController: NavHostController, actions: Actions) {
         }
         composable(route = SearchScreen.route) {
             SearchScreen(actions = actions)
+        }
+        composable(route = FilmographyScreen.route) {
+            val cast = it.requiredArg<Cast>("cast_detail")
+            FilmographyScreen(cast = cast, actions = actions)
         }
     }
 }
