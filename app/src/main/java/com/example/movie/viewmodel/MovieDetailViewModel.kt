@@ -109,11 +109,4 @@ class MovieDetailViewModel(
             key = trailerKey
         )
     }
-
-    @VisibleForTesting
-    internal fun onRequestError(message: String?) {
-        _stateDetails.update {
-            it.copy(error = message ?: DEFAULT_ERROR_MESSAGE, isLoading = false)
-        }
-    }
 }
